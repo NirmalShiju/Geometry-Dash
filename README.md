@@ -1,1 +1,1 @@
-"# Geometry-Dash" 
+Geometry Dash
