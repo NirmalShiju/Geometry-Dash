@@ -21,7 +21,7 @@ public class Player extends GPolygon {
         angle = 0;
 
         setColor(Color.BLACK);
-        setFillColor(Color.BLUE);
+        setFillColor(Color.GREEN);
         setFilled(true);
     }
 

@@ -7,6 +7,11 @@ public abstract class MoveableGameObject {
 
     public boolean updateLocation() {
         object.move(GeometryDash_ShijuGoyal.kMovementConstant, 0);
+        /*
+        if (object.getX()+object.getWidth() < 0) {
+            System.out.println("basdfasdfasdf");
+        }
+        */
         return (object.getX()+object.getWidth() < 0);
     }
 
