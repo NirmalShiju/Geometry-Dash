@@ -1,5 +1,6 @@
 # Ignore IntelliJ config files
 *.idea
+Geometry Dash.iml
 
 # Ignore ACM Graphics jar file
 *.jar

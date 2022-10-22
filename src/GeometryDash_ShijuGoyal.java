@@ -3,7 +3,6 @@ package src;
 import acm.graphics.*;
 import acm.program.GraphicsProgram;
 
-import javax.sound.sampled.Port;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -48,7 +47,7 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
 
         // TITLE SCREEN
         // Create background image
-        GImage background = new GImage("background.jpeg");
+        GImage background = new GImage("images/background.jpeg");
         background.scale(getWidth()/kBackgroundPixelWidth, getHeight()/kBackgroundPixelHeight);
         add(background, (getWidth()-background.getWidth())/2, (getHeight()-background.getHeight())/2);
 
