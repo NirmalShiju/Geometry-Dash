@@ -3,12 +3,11 @@ package src;
 import acm.graphics.*;
 import acm.program.GraphicsProgram;
 
+import javax.sound.sampled.Port;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-import java.awt.Color;
 
 public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListener {
     // Background image constants
@@ -28,8 +27,8 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
     public static final int kLocationConstant = 100;
     public static int kRotationConstant = 9;
     public static int kJumpConstant = -20;
+    public static int kGravityConstant = 1;
     public static int kMovementConstant = -10;
-    public static final int kGravity = 1;
     public static final int kLoopDt = 9;
     public static boolean playing = false;
     public static boolean jump = false;
@@ -157,11 +156,18 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
             add(obstacle.getObject());
         }
 
+        Portal[] portals = {
+                new Portal(Portal.PortalType.GRAVITY, 204.5, 5, 1, 3)
+        };
+        for (Portal portal : portals) {
+            add(portal.getObject());
+        }
+
         // Give user hint on how to jump
-        GLabel tip = new GLabel("Hit the spacebar to jump!");
-        tip.setFont("SansSerif-60");
-        add(tip, (getWidth() - tip.getWidth())/2, getHeight()/3);
-        System.out.println(tip.isVisible());
+        GLabel tip1 = new GLabel("Hit the spacebar to jump!");
+        tip1.setFont("SansSerif-60");
+        add(tip1, (getWidth() - tip1.getWidth())/2, getHeight()/3);
+        System.out.println(tip1.isVisible());
 
         // Give user hint on how to pause
         GLabel tip2 = new GLabel("Hit the p button to pause.");
@@ -180,8 +186,8 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
         GameLoop:
         while (true) {
             // Remove tips once player jumps
-            if (jump && tip.isVisible() || paused && tip.isVisible()) {
-                remove(tip);
+            if (jump && tip1.isVisible() || paused && tip1.isVisible()) {
+                remove(tip1);
                 //tip.setVisible(false);
                 remove(tip2);
                 //tip2.setVisible(false);
@@ -199,10 +205,10 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
             if (!player.getGrounded()) {
                 //fall due to gravity
                 player.move(0, player.getDy());
-                //rotatition animation while falling
+                //rotation animation while falling
                 player.rotate(-GeometryDash_ShijuGoyal.kRotationConstant);
                 //updates velocity to allow for gravity-like acceleration
-                player.setDy(player.getDy()+GeometryDash_ShijuGoyal.kGravity);
+                player.setDy(player.getDy()+GeometryDash_ShijuGoyal.kGravityConstant);
                 //makes sure a jump while in the air does not cause the
                 //player to jump once it hits the ground again
                 jump = false;
@@ -217,6 +223,9 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
             }
             for (Obstacle obstacle : obstacles) {
                 if (obstacle.updateLocation()) remove(obstacle.getObject());
+            }
+            for (Portal portal : portals) {
+                if (portal.updateLocation()) remove(portal.getObject());
             }
 
             // Check for collisions
@@ -237,6 +246,16 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
                 }
             }
 
+            for (Portal portal : portals) {
+                if (portal.checkCollision(player)) {
+                    switch (portal.getType()) {
+                        case GRAVITY:
+                            invertGravity();
+                            break;
+                    }
+                }
+            }
+
             // Update player state
             if (player.getGrounded()) {
                 player.setDy(0);
@@ -250,6 +269,12 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
             // Pause for game loop
             pause(kLoopDt);
         }
+    }
+
+    public void invertGravity() {
+        kJumpConstant *= -1;
+        kRotationConstant *= -1;
+        kGravityConstant *= -1;
     }
 
     private class MyKeyListener implements KeyListener {

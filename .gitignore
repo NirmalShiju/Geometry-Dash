@@ -1,3 +1,8 @@
-# IntelliJ Settings File
+# Ignore IntelliJ config files
 *.idea
+
+# Ignore ACM Graphics jar file
 *.jar
+
+# Ignore build directory
+/out
