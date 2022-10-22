@@ -6,15 +6,16 @@ import acm.graphics.GRect;
 
 import java.awt.*;
 
-public class Platform extends MoveableGameObject {
-    public enum PlatformType {
+public class Obstacle extends MoveableGameObject {
+    public enum ObstacleType {
         RECTANGLE,
+        TRIANGLE,
         LINE
     }
 
-    private PlatformType type;
+    private ObstacleType type;
 
-    public Platform(PlatformType type, double xMultiplier, int yIndex, double param1, double param2) {
+    public Obstacle(Obstacle.ObstacleType type, double xMultiplier, int yIndex, double param1, double param2) {
         this.type = type;
         switch (this.type) {
             case RECTANGLE:
@@ -24,7 +25,19 @@ public class Platform extends MoveableGameObject {
                         GeometryDash_ShijuGoyal.kLocationConstant*param1,
                         GeometryDash_ShijuGoyal.kObjectSize*param2
                 );
-                ((GFillable) object).setFillColor(Color.MAGENTA);
+                ((GFillable) object).setFillColor(Color.RED);
+                ((GFillable) object).setFilled(true);
+                object.setColor(Color.BLACK);
+
+                break;
+            case TRIANGLE:
+                object = new GTriangle(
+                        GeometryDash_ShijuGoyal.kLocationConstant*xMultiplier,
+                        GeometryDash_ShijuGoyal.kHeightLevels[yIndex],
+                        GeometryDash_ShijuGoyal.kObjectSize*param1,
+                        param2
+                );
+                ((GFillable) object).setFillColor(Color.RED);
                 ((GFillable) object).setFilled(true);
                 object.setColor(Color.BLACK);
 
@@ -36,7 +49,7 @@ public class Platform extends MoveableGameObject {
                         GeometryDash_ShijuGoyal.kLocationConstant*param1,
                         GeometryDash_ShijuGoyal.kHeightLevels[(int) param2]
                 );
-                object.setColor(Color.MAGENTA);
+                object.setColor(Color.RED);
 
                 break;
         }
@@ -44,11 +57,7 @@ public class Platform extends MoveableGameObject {
 
     @Override
     public boolean checkCollision(Player player) {
-        return (
-                player.getRight() >= object.getX()
-                && player.getLeft() <= object.getX()+object.getWidth()
-                && player.getTop() < object.getY()
-                && player.getBottom() >= object.getY()
-        );
+        // TODO - Dhruv
+        return false;
     }
 }

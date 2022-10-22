@@ -79,52 +79,31 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
         // Wait until player hits start
         while (!playing) pause(kLoopDt);
 
-        // Start game - Draw player, platforms, and obstacles
+        // START GAME
         // Add player
         Player player = new Player(kPlayerStartLocation, kHeightLevels[1]-kObjectSize);
         add(player);
 
-        // Add platforms
-        GObject[] platforms = {
-                new GRect(kLocationConstant*0, kHeightLevels[0], kLocationConstant*40, kObjectSize/2),
-                new GRect(kLocationConstant*40, kHeightLevels[1], kLocationConstant*50, kObjectSize/2)
-        };
-        for (GObject platform : platforms) {
-            if (platform instanceof GFillable) {
-                ((GFillable) platform).setFillColor(Color.MAGENTA);
-                ((GFillable) platform).setFilled(true);
-                platform.setColor(Color.BLACK);
-            } else {
-                platform.setColor(Color.MAGENTA);
-            }
-
-            add(platform);
-        }
-
-//        Platform[] platforms = {
-//                new Platform(Platform.PlatformType.RECTANGLE, 0, 0, 40, 0.5),
-//                new Platform(Platform.PlatformType.RECTANGLE, 40, 1, 50, 0.5)
-//        };
-
-        // Add obstacles
-        GObject[] obstacles = {
-            new GTriangle(kLocationConstant*30, kHeightLevels[0], kObjectSize, 0),
-            new GLine(kLocationConstant*40, kHeightLevels[0], kLocationConstant*40, kHeightLevels[1]),
-        };
-        for (GObject obstacle : obstacles) {
-            if (obstacle instanceof GFillable) {
-                ((GFillable) obstacle).setFillColor(Color.RED);
-                ((GFillable) obstacle).setFilled(true);
-                obstacle.setColor(Color.BLACK);
-            } else {
-                obstacle.setColor(Color.RED);
-            }
-
-            add(obstacle);
-        }
-
         // Add jump listener
         addKeyListeners(new MyKeyListener());
+
+        // Create obstacles and platform. While the parameters seem like magic numbers, they are just multipliers of
+        // game constants (check constructors for specifics).
+        Platform[] platforms = {
+                new Platform(Platform.PlatformType.RECTANGLE, 0, 0, 40, 0.5),
+                new Platform(Platform.PlatformType.RECTANGLE, 40, 1, 50, 0.5)
+        };
+        for (Platform platform : platforms) {
+            add(platform.getObject());
+        }
+
+        Obstacle[] obstacles = {
+                new Obstacle(Obstacle.ObstacleType.TRIANGLE, 30, 0, 1, 0),
+                new Obstacle(Obstacle.ObstacleType.LINE, 40, 0, 40, 1)
+        };
+        for (Obstacle obstacle : obstacles) {
+            add(obstacle.getObject());
+        }
 
         // Give user hint on how to move
         GLabel tip = new GLabel("Hit the spacebar to jump!");
@@ -145,39 +124,31 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
             if (!player.getGrounded()) {
                 player.move(0, player.getDy());
                 player.rotate(-GeometryDash_ShijuGoyal.kRotationConstant);
-
                 player.setDy(player.getDy()+GeometryDash_ShijuGoyal.kGravity);
+
+                // Check if player is hitting edges of screen
+                if (player.getBottom() >= getHeight() || player.getTop() <= 0) break GameLoop;
             }
 
-            // Update platform and obstacle positions
-            for (GObject obstacle : obstacles) {
-                obstacle.move(kMovementConstant, 0);
-                if (obstacle.getX()+obstacle.getWidth() < 0) {
-                    remove(obstacle);
-                }
+            // Update platform and obstacle positions and remove if offscreen
+            for (Platform platform : platforms) {
+                if (platform.updateLocation()) remove(platform.getObject());
             }
-            for (GObject platform : platforms) {
-                platform.move(kMovementConstant, 0);
-                if (platform.getX()+platform.getWidth() < 0) {
-                    remove(platform);
-                }
+            for (Obstacle obstacle : obstacles) {
+                if (obstacle.updateLocation()) remove(obstacle.getObject());
             }
 
             // Check for collisions
-            for (GObject obstacle : obstacles) {
-                // tbd - Dhruv
-                if (false) {
+            for (Obstacle obstacle : obstacles) {
+                if (obstacle.checkCollision(player)) {
                     break GameLoop;
                 }
             }
+
             player.setGrounded(false);
-            for (GObject platform : platforms) {
-                if (player.getRight() >= platform.getX()
-                        && player.getLeft() <= platform.getX()+platform.getWidth()
-                        && player.getTop() < platform.getY()
-                        && player.getBottom() >= platform.getY()
-                ) {
-                    player.setLocation(player.getX(), platform.getY()-kObjectSize/2);
+            for (Platform platform : platforms) {
+                if (platform.checkCollision(player)) {
+                    player.setLocation(player.getX(), platform.getObject().getY()-kObjectSize/2);
                     player.setFlat();
                     player.setGrounded(true);
                 }
