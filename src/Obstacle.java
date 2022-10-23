@@ -1,8 +1,6 @@
 package src;
 
-import acm.graphics.GFillable;
-import acm.graphics.GLine;
-import acm.graphics.GRect;
+import acm.graphics.*;
 
 import java.awt.*;
 
@@ -16,8 +14,8 @@ public class Obstacle extends MoveableGameObject {
     private ObstacleType type;
     //private double xMultiplier;
     //private int yIndex;
-    //private double param1;
-    //private double param2;
+    private double param1;
+    private double param2;
 
     public Obstacle(Obstacle.ObstacleType type, double xMultiplier, int yIndex, double param1, double param2) {
         //for all types, xMultiplier specifies x-coord, & yIndex specifies y-coord using heights array
@@ -26,8 +24,8 @@ public class Obstacle extends MoveableGameObject {
         this.type = type;
         //this.xMultiplier = xMultiplier;
         //this.yIndex = yIndex;
-        //this.param1 = param1;
-        //this.param2 = param2;
+        this.param1 = param1;
+        this.param2 = param2;
 
         //actual creation of obstacle object
         switch (this.type) {
@@ -53,23 +51,37 @@ public class Obstacle extends MoveableGameObject {
                         GeometryDash_ShijuGoyal.kLocationConstant*xMultiplier,
                         GeometryDash_ShijuGoyal.kHeightLevels[yIndex],
                         GeometryDash_ShijuGoyal.kObjectSize*param1,
-                        param2
+                        (int)param2
                 );
                 ((GFillable) object).setFillColor(Color.RED);
                 ((GFillable) object).setFilled(true);
                 object.setColor(Color.BLACK);
 
                 break;
-            case LINE:
+            case LINE: //Lines should only be vertical or horizontal
                 // For lines, param1 just specifies ending x-coord on line
                 // using the multiplier, and param2 specifies ending y-coord
                 // on line using heights array.
+
+                /*
                 object = new GLine(
                         GeometryDash_ShijuGoyal.kLocationConstant*xMultiplier,
                         GeometryDash_ShijuGoyal.kHeightLevels[yIndex],
                         GeometryDash_ShijuGoyal.kLocationConstant*param1,
                         GeometryDash_ShijuGoyal.kHeightLevels[(int) param2]
                 );
+                object.setColor(Color.RED);
+                */
+
+                //attempting to make lines as just skinny rectangles
+                object = new GRect(
+                        GeometryDash_ShijuGoyal.kLocationConstant*xMultiplier,
+                        GeometryDash_ShijuGoyal.kHeightLevels[yIndex],
+                        GeometryDash_ShijuGoyal.kObjectSize*param1,
+                        GeometryDash_ShijuGoyal.kObjectSize*param2
+                );
+                ((GFillable) object).setFillColor(Color.RED);
+                ((GFillable) object).setFilled(true);
                 object.setColor(Color.RED);
 
                 break;
@@ -100,16 +112,94 @@ public class Obstacle extends MoveableGameObject {
                     //System.out.println("Vertical overlap!");
                     verticalOverlap = true;
                 }
-                System.out.println("Horizontal overlap: " + horizontalOverlap +" Vertical Overlap: " + verticalOverlap);
+                //System.out.println("Horizontal overlap: " + horizontalOverlap +" Vertical Overlap: " + verticalOverlap);
 
                 return (verticalOverlap && horizontalOverlap);
 
             case TRIANGLE:
+                /*
+                // (x0, y0) is the bottom left corner of player
+                double x0 = player.getLeft();
+                double y0 = player.getBottom();
+
+                double potentialIntersection = getObject().getX() - (getObject().getY() + param1)/2;
+
+                if (potentialIntersection >= player.getLeft() &&
+                    potentialIntersection <= player.getLeft() + param1) {
+                    horizontalOverlap = true;
+                }
+                if (potentialIntersection >= (getObject().getX() - param1/2) &&
+                    potentialIntersection <= getObject().getX()) {
+                    verticalOverlap = true;
+                }
+
+                return (verticalOverlap && horizontalOverlap);
+                 */
+
+                //CHECK IF ANY CORNER OF PLAYER IS CONTAINED IN TRIANGLE
+                if (triContaining(getObject(), new GPoint(player.getLeft(), player.getBottom())) ||
+                        triContaining(getObject(), new GPoint(player.getLeft(), player.getTop())) ||
+                        triContaining(getObject(), new GPoint(player.getRight(), player.getBottom())) ||
+                        triContaining(getObject(), new GPoint(player.getRight(), player.getTop()))) {
+                    return true;
+                }
+
+                //CHECK IF ANY CORNER OF TRIANGLE IS CONTAINED IN SQUARE
+                GPoint triPoint1 = new GPoint(getObject().getX() - param1/2,getObject().getY());
+                GPoint triPoint2 = new GPoint(getObject().getX() + param1/2,getObject().getY());
+                GPoint triPoint3 = new GPoint(getObject().getX(),getObject().getY() + param1);
+
+                if (player.contains(triPoint1) ||
+                        player.contains(triPoint2) ||
+                        player.contains(triPoint3)) {
+                    return true;
+                }
+
+
                 return false;
+
             case LINE:
-                return false;
+                //if collides return true
+
+                obstacleTop = getObject().getY();
+                obstacleBottom = getObject().getY() + getObject().getHeight();
+                obstacleLeft = getObject().getX();
+                obstacleRight = getObject().getX() + getObject().getWidth();
+
+                //if line is vertical, need to not consider its "top tip" to be
+                //a collision, so we consider the new "top tip" to be a pixel lower
+                if (getObject().getWidth() == 0) {
+                    obstacleTop += 1;
+                }
+
+                if (player.getRight() >= obstacleLeft && player.getLeft() <= obstacleRight) {
+                    horizontalOverlap = true;
+                }
+                if (player.getBottom() >= obstacleTop && player.getTop() <= obstacleBottom) {
+                    verticalOverlap = true;
+                }
+
+                return (verticalOverlap && horizontalOverlap);
+
+
         }
 
+        return false;
+    }
+
+    public boolean triContaining(GObject triangle, GPoint point) {
+        double x0 = triangle.getX();
+        double y0 = triangle.getY();
+        if (point.getY() >= y0 || point.getY() <= y0 + param1) {
+            return false;
+        }
+        //If code reaches here, then GPoint y-coord is within triangle
+        //vertical bounding box
+        double distance = ((y0 + param1) - point.getY())/2;
+        if (point.getX() >= x0 - distance &&
+                point.getX() <= x0 + distance) {
+            return true;
+        }
         return false;
     }
 }

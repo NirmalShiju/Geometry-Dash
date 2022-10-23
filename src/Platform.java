@@ -44,11 +44,34 @@ public class Platform extends MoveableGameObject {
 
     @Override
     public boolean checkCollision(Player player) {
+
+        boolean horizontalOverlap = false;
+        boolean verticalOverlap = false;
+
+        double obstacleTop = getObject().getY();
+        double obstacleBottom = getObject().getY() + getObject().getHeight();
+        double obstacleLeft = getObject().getX();
+        double obstacleRight = getObject().getX() + getObject().getWidth();
+
+        if (player.getRight() >= obstacleLeft && player.getLeft() <= obstacleRight) {
+            //System.out.println("Horizontal overlap!");
+            horizontalOverlap = true;
+        }
+        if (player.getBottom() >= obstacleTop && player.getTop() <= obstacleBottom) {
+            //System.out.println("Vertical overlap!");
+            verticalOverlap = true;
+        }
+        //System.out.println("Horizontal overlap: " + horizontalOverlap +" Vertical Overlap: " + verticalOverlap);
+
+        return (verticalOverlap && horizontalOverlap);
+
+        /*
         return (
                 player.getRight() >= object.getX()
                 && player.getLeft() <= object.getX()+object.getWidth()
                 && player.getTop() < object.getY()
                 && player.getBottom() >= object.getY()
         );
+        */
     }
 }

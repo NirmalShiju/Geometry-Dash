@@ -75,7 +75,7 @@ public class StartButtonWrapper {
                         (screenWidth-startBoxSize+startRectangleSize)/2 + startTriangleOffset,
                         (screenHeight-startBoxSize+startRectangleSize*2)/2,
                         startTriangleSize, // Perfectly sized constant to make start button look good
-                        -90 // rotate -90 degrees so triangle points right
+                        3 // rotate 270 degrees clockwise so triangle points right
                 )
         );
         startButtonParts.get(startButtonParts.size()-1).setColor(Color.BLACK);
