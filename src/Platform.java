@@ -69,7 +69,6 @@ public class Platform extends MoveableGameObject {
         }
         player.setFlat();
         player.setGrounded(true);
-        System.out.println(player.getDy());
         return false;
     }
 }

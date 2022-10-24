@@ -14,7 +14,7 @@ public class StartButtonWrapper {
             double startRectangleSize,
             double startTriangleOffset,
             double startTriangleSize
-            ) {
+    ) {
         startButtonParts = new ArrayList<>();
 
         // Add cyan box in black

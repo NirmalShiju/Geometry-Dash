@@ -26,6 +26,7 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
     public static final int[] kHeightLevels = {800, 700, 600, 500, 400, 300, 200, 150, 100, 50, 0};
     public static final int[] kTriangleAngles = {0, 90, 180, 270};
     public static final int kLocationConstant = 100;
+    public static final double kEndLineDistance = 220*kLocationConstant - kPlayerStartLocation;
     public static int kRotationConstant = 4;
     public static double kJumpConstant = -20.5;
     public static int kGravityConstant = 1;
@@ -41,7 +42,7 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
     public static final int kDeathAnimationDt = 20;
     public static final int kDeathExplosionScale = 2;
     public static final int kTwo = 2;
-    public static final int kNumMessageFlashes = 5;
+    public static final int kNumMessageFlashes = 3;
     public static final int kMessageDisplayDt = 500;
 
     public static void main(String[] args) {
@@ -94,6 +95,10 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
         do {
             removeAll();
             add(background, (getWidth()-background.getWidth())/2, (getHeight()-background.getHeight())/2);
+            if (invertedGravity) {
+                invertGravity();
+                invertedGravity = false;
+            }
             paused = false;
             completedGame = play();
         } while (!completedGame);
@@ -185,10 +190,13 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
             add(portal.getObject());
         }
 
-        //add finish line
+        // Add finish line
         FinishLine ending = new FinishLine(220, 10, 1, 10);
-        //FinishLine ending = new FinishLine(10, 10, 1, 10);
         add(ending.getObject());
+
+        // Add progress bar
+        ProgressBarWrapper progressBar = new ProgressBarWrapper(getWidth(), 0.125, 0.25);
+        add(progressBar.getProgressBar());
 
         // Give user hint on how to jump
         GLabel tip1 = new GLabel("Hit the spacebar to jump!");
@@ -210,6 +218,9 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
         // Run game loop
         GameLoop:
         while (true) {
+            // Update progress bar
+            progressBar.updateProgressBar(ending.getLeft()/(kEndLineDistance-getWidth()));
+
             // Remove tips once player has followed them and pause/resume logic
             if (jump && tip1.isVisible()) {
                 tip1.setVisible(false);
@@ -278,6 +289,7 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
             if (ending.checkCollision(player)) {
                 remove(tip1);
                 remove(tip2);
+                progressBar.updateProgressBar(0);
                 winningAnimation(player);
                 return true;
             }
