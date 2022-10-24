@@ -135,9 +135,7 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
                 new Platform(Platform.PlatformType.RECTANGLE, 170.5, 4, 2, 0.25),
                 new Platform(Platform.PlatformType.RECTANGLE, 185, 1, 12, 1),
                 new Platform(Platform.PlatformType.RECTANGLE, 197, 2, 8, 2),
-                new Platform(Platform.PlatformType.RECTANGLE, 206, 10, 15, 1),
-
-                //why does auto adjust player not work????
+                new Platform(Platform.PlatformType.RECTANGLE, 205, 10, 16, 1),
         };
         for (Platform platform : platforms) {
             add(platform.getObject());
