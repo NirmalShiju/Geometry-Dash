@@ -168,8 +168,6 @@ public class Obstacle extends MoveableGameObject {
                 }
 
                 return (verticalOverlap && horizontalOverlap);
-
-
         }
 
         return false;

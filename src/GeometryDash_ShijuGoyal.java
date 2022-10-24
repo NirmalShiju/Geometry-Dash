@@ -26,7 +26,7 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
     public static final int[] kHeightLevels = {800, 700, 600, 500, 400, 300, 200, 150, 100, 50, 0};
     public static final int[] kTriangleAngles = {0, 90, 180, 270};
     public static final int kLocationConstant = 100;
-    public static final double kEndLineDistance = 220*kLocationConstant - kPlayerStartLocation;
+    public static final double kEndLineDistance = 220*kLocationConstant;
     public static int kRotationConstant = 4;
     public static double kJumpConstant = -20.5;
     public static int kGravityConstant = 1;
@@ -119,17 +119,17 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
         Platform[] platforms = {
                 new Platform(Platform.PlatformType.RECTANGLE, 0, 0, 128, 0.5),
                 new Platform(Platform.PlatformType.RECTANGLE, 57, 1, 1, 1),
-                new Platform(Platform.PlatformType.RECTANGLE, 61, 2, 1, 2),
-                new Platform(Platform.PlatformType.RECTANGLE, 65, 3, 1, 3),
+                new Platform(Platform.PlatformType.RECTANGLE, 60.8, 2, 1, 2),
+                new Platform(Platform.PlatformType.RECTANGLE, 64.6, 3, 1, 3),
                 new Platform(Platform.PlatformType.RECTANGLE, 90, 1, 10, 1),
                 new Platform(Platform.PlatformType.RECTANGLE, 104, 1, 10, 1),
                 new Platform(Platform.PlatformType.RECTANGLE, 118, 2, 10, 2),
                 new Platform(Platform.PlatformType.RECTANGLE, 132, 0, 1, 0.25),
-                new Platform(Platform.PlatformType.RECTANGLE, 136, 1, 1, 0.25),
-                new Platform(Platform.PlatformType.RECTANGLE, 140, 2, 1, 0.25),
-                new Platform(Platform.PlatformType.RECTANGLE, 144, 3, 1, 0.25),
-                new Platform(Platform.PlatformType.RECTANGLE, 148, 4, 1, 0.25),
-                new Platform(Platform.PlatformType.RECTANGLE, 152, 5, 1, 0.25),
+                new Platform(Platform.PlatformType.RECTANGLE, 135.8, 1, 1, 0.25),
+                new Platform(Platform.PlatformType.RECTANGLE, 139.6, 2, 1, 0.25),
+                new Platform(Platform.PlatformType.RECTANGLE, 143.4, 3, 1, 0.25),
+                new Platform(Platform.PlatformType.RECTANGLE, 147.2, 4, 1, 0.25),
+                new Platform(Platform.PlatformType.RECTANGLE, 151, 5, 1, 0.25),
                 new Platform(Platform.PlatformType.RECTANGLE, 155, 2, 30, 2),
                 new Platform(Platform.PlatformType.RECTANGLE, 163.5, 4, 2, 0.25),
                 new Platform(Platform.PlatformType.RECTANGLE, 170.5, 4, 2, 0.25),
@@ -219,7 +219,8 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
         GameLoop:
         while (true) {
             // Update progress bar
-            progressBar.updateProgressBar(ending.getLeft()/(kEndLineDistance-getWidth()));
+            progressBar.updateProgressBar((ending.getLeft()-kPlayerStartLocation-kObjectSize/2)
+                    /(kEndLineDistance-getWidth()));
 
             // Remove tips once player has followed them and pause/resume logic
             if (jump && tip1.isVisible()) {
@@ -230,6 +231,8 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
                 if (tip2.isVisible()) {
                     tip2.setVisible(false);
                     remove(tip2);
+                    tip1.setVisible(false);
+                    remove(tip1);
                 }
                 tip3.setVisible(true);
 
@@ -280,6 +283,7 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
                         case GRAVITY:
                             invertedGravity = !invertedGravity;
                             invertGravity();
+                            player.setLocation(player.getY() + (invertedGravity ? -2 : 2));
                             break;
                     }
                 }
