@@ -16,6 +16,7 @@ public class Player extends GPolygon {
         addEdge(-GeometryDash_ShijuGoyal.kObjectSize, 0);
         addEdge(0, -GeometryDash_ShijuGoyal.kObjectSize);
         move(-GeometryDash_ShijuGoyal.kObjectSize/2, -GeometryDash_ShijuGoyal.kObjectSize/2);
+        //move(0, -GeometryDash_ShijuGoyal.kObjectSize/2);
         dy = 0;
         grounded = false;
         angle = 0;
@@ -26,19 +27,19 @@ public class Player extends GPolygon {
     }
 
     public double getBottom() {
-        return getY() + getHeight()/2;
+        return getY() + GeometryDash_ShijuGoyal.kObjectSize/2;
     }
 
     public double getTop() {
-        return getY() - getHeight()/2;
+        return getY() - GeometryDash_ShijuGoyal.kObjectSize/2;
     }
 
     public double getLeft() {
-        return getX() - getWidth()/2;
+        return getX() - GeometryDash_ShijuGoyal.kObjectSize/2;
     }
 
     public double getRight() {
-        return getX() + getWidth()/2;
+        return getX() + GeometryDash_ShijuGoyal.kObjectSize/2;
     }
 
     public void jump() {

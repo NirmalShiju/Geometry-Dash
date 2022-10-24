@@ -139,8 +139,8 @@ public class Obstacle extends MoveableGameObject {
                 //CHECK IF ANY CORNER OF PLAYER IS CONTAINED IN TRIANGLE
                 if (triContaining(getObject(), new GPoint(player.getLeft(), player.getBottom())) ||
                         triContaining(getObject(), new GPoint(player.getLeft(), player.getTop())) ||
-                        triContaining(getObject(), new GPoint(player.getRight(), player.getBottom())) ||
-                        triContaining(getObject(), new GPoint(player.getRight(), player.getTop()))) {
+                        triContaining(getObject(), new GPoint(player.getRight(), player.getTop())) ||
+                        triContaining(getObject(), new GPoint(player.getRight(), player.getBottom()))) {
                     return true;
                 }
 
@@ -190,14 +190,18 @@ public class Obstacle extends MoveableGameObject {
     public boolean triContaining(GObject triangle, GPoint point) {
         double x0 = triangle.getX();
         double y0 = triangle.getY();
-        if (point.getY() >= y0 || point.getY() <= y0 + param1) {
+        System.out.println(x0 + ", " + y0 + ", " + point.getX() + ", " + point.getY());
+        //NEEDS TO BE MINUS BECAUSE MINUS Y GOES UP
+        if (point.getY() > y0 || point.getY() <= y0 - triangle.getHeight()) {
             return false;
         }
         //If code reaches here, then GPoint y-coord is within triangle
         //vertical bounding box
-        double distance = ((y0 + param1) - point.getY())/2;
+        double distance = (point.getY() - (y0 - triangle.getHeight()))/2;
+        System.out.println("Slatt: " + point.getX()+ ", " + x0 + ", " + distance);
         if (point.getX() >= x0 - distance &&
                 point.getX() <= x0 + distance) {
+            System.out.println("Collision");
             return true;
         }
         return false;

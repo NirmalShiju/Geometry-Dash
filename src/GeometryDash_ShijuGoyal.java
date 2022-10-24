@@ -308,6 +308,7 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
 
             // Check for collisions
             for (Obstacle obstacle : obstacles) {
+                System.out.println("about to call check collision");
                 if (obstacle.checkCollision(player)) {
                     remove(tip1);
                     remove(tip2);
@@ -320,7 +321,7 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
             // Pause for game loop
             pause(kLoopDt);
 
-            //Game competion logic
+            //Game completion logic
             if (ending.checkCollision(player)) {
                 remove(tip1);
                 remove(tip2);

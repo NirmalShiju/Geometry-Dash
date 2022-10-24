@@ -5,10 +5,12 @@ import acm.graphics.GPolygon;
 
 public class GTriangle extends GPolygon {
     private double size;
+    private int angleIndex;
 
     public GTriangle(double x, double y, double size, int angleIndex) {
         super(x, y);
         this.size = size;
+        this.angleIndex = angleIndex;
         addVertex(size/2, 0);
         addEdge(-size/2, -size);
         addEdge(-size/2, size);
@@ -29,7 +31,7 @@ public class GTriangle extends GPolygon {
     public boolean containing(GPoint point) {
         double x0 = getX();
         double y0 = getY();
-        if (point.getY() >= y0 || point.getY() <= y0 + size) {
+        if (point.getY() > y0 || point.getY() < (y0 + size)) {
             return false;
         }
         //If code reaches here, then GPoint y-coord is within triangle
