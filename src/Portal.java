@@ -35,6 +35,7 @@ public class Portal extends MoveableGameObject {
 
     @Override
     public boolean checkCollision(Player player) {
-        return (player.getRight() >= object.getX() && player.getLeft() <= object.getX()+object.getWidth());
+        return (player.getRight() >= getLeft()
+                && player.getRight() < getLeft()-GeometryDash_ShijuGoyal.kMovementConstant);
     }
 }

@@ -15,8 +15,7 @@ public class Player extends GPolygon {
         addEdge(0, GeometryDash_ShijuGoyal.kObjectSize);
         addEdge(-GeometryDash_ShijuGoyal.kObjectSize, 0);
         addEdge(0, -GeometryDash_ShijuGoyal.kObjectSize);
-        move(-GeometryDash_ShijuGoyal.kObjectSize/2, -GeometryDash_ShijuGoyal.kObjectSize/2);
-        //move(0, -GeometryDash_ShijuGoyal.kObjectSize/2);
+        move(0, -GeometryDash_ShijuGoyal.kObjectSize/2);
         dy = 0;
         grounded = false;
         angle = 0;
@@ -70,6 +69,9 @@ public class Player extends GPolygon {
 
     public void setFlat() {
         rotate(-angle);
+    }
+    public void setLocation(double height) {
+        setLocation(GeometryDash_ShijuGoyal.kPlayerStartLocation, height);
     }
 }
 

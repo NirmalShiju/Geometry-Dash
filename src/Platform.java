@@ -44,34 +44,32 @@ public class Platform extends MoveableGameObject {
 
     @Override
     public boolean checkCollision(Player player) {
-
-        boolean horizontalOverlap = false;
-        boolean verticalOverlap = false;
-
-        double obstacleTop = getObject().getY();
-        double obstacleBottom = getObject().getY() + getObject().getHeight();
-        double obstacleLeft = getObject().getX();
-        double obstacleRight = getObject().getX() + getObject().getWidth();
-
-        if (player.getRight() >= obstacleLeft && player.getLeft() <= obstacleRight) {
-            //System.out.println("Horizontal overlap!");
-            horizontalOverlap = true;
+        // Check if there is no overlap at all
+        if (
+                player.getRight() < getLeft()
+                || player.getLeft() > getRight()
+                || player.getBottom() < getTop()
+                || player.getTop() > getBottom()
+        ) {
+            return false;
         }
-        if (player.getBottom() >= obstacleTop && player.getTop() <= obstacleBottom) {
-            //System.out.println("Vertical overlap!");
-            verticalOverlap = true;
+
+        // Check if player simply ran into side of platform
+        if (!GeometryDash_ShijuGoyal.invertedGravity && player.getBottom()-getTop() > player.getDy()
+                || GeometryDash_ShijuGoyal.invertedGravity && player.getTop()-getBottom() < player.getDy()
+        ) {
+            return true;
         }
-        //System.out.println("Horizontal overlap: " + horizontalOverlap +" Vertical Overlap: " + verticalOverlap);
 
-        return (verticalOverlap && horizontalOverlap);
-
-        /*
-        return (
-                player.getRight() >= object.getX()
-                && player.getLeft() <= object.getX()+object.getWidth()
-                && player.getTop() < object.getY()
-                && player.getBottom() >= object.getY()
-        );
-        */
+        // Make player landings look smooth
+        if (!GeometryDash_ShijuGoyal.invertedGravity) {
+            player.setLocation(getTop()-GeometryDash_ShijuGoyal.kObjectSize/2);
+        } else {
+            player.setLocation(getBottom()+GeometryDash_ShijuGoyal.kObjectSize/2);
+        }
+        player.setFlat();
+        player.setGrounded(true);
+        System.out.println(player.getDy());
+        return false;
     }
 }

@@ -26,22 +26,23 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
     public static final int[] kHeightLevels = {800, 700, 600, 500, 400, 300, 200, 150, 100, 50, 0};
     public static final int[] kTriangleAngles = {0, 90, 180, 270};
     public static final int kLocationConstant = 100;
-    public static int kRotationConstant = 9;
-    public static int kJumpConstant = -20;
+    public static int kRotationConstant = 4;
+    public static double kJumpConstant = -20.5;
     public static int kGravityConstant = 1;
     public static int kMovementConstant = -10;
     public static final int kLoopDt = 9;
     public static boolean playing = false;
     public static boolean jump = false;
     public static boolean paused = false;
+    public static boolean invertedGravity = false;
 
-    //End of game sequence constants
+    // End of game sequence constants
     public static final int kDeathCircleInitSize = 1;
     public static final int kDeathAnimationDt = 20;
     public static final int kDeathExplosionScale = 2;
     public static final int kTwo = 2;
-    public static final int kNumMessageFlashes = 10;
-    public static final int kMessageDisplayDt = 1000;
+    public static final int kNumMessageFlashes = 5;
+    public static final int kMessageDisplayDt = 500;
 
     public static void main(String[] args) {
         new GeometryDash_ShijuGoyal().start(args);
@@ -88,25 +89,18 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
         // Wait until player hits start
         while (!playing) pause(kLoopDt);
 
-        //plays after player hits start and assigns
-        //whether player wins to boolean
-        boolean completedGame = play();
-
-        //Prints out message based on game result
-        if (completedGame) {
-            //winningAnimation() called in play() method
-            System.out.println("\nYEAH! YOU WON!");
-        } else {
-            //deathAnimation() called in play() method
-            System.out.println("\nSorry! You lost!");
-        }
+        // Plays until the player wins
+        boolean completedGame;
+        do {
+            removeAll();
+            add(background, (getWidth()-background.getWidth())/2, (getHeight()-background.getHeight())/2);
+            paused = false;
+            completedGame = play();
+        } while (!completedGame);
     }
 
     public boolean play() {
         // START GAME
-
-        //gravInverted is false at start of game
-        boolean gravInverted = false;
 
         // Add player
         Player player = new Player(kPlayerStartLocation, kHeightLevels[1]-kObjectSize);
@@ -149,11 +143,9 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
                 //new Obstacle(Obstacle.ObstacleType.RECTANGLE, 35, 3, 6, 1),
 
                 new Obstacle(Obstacle.ObstacleType.TRIANGLE, 40, 0, 0.5, 0),
-                new Obstacle(Obstacle.ObstacleType.TRIANGLE, 40 + (0.5 * (0.5+1)),
-                        0, 1, 0),
+                new Obstacle(Obstacle.ObstacleType.TRIANGLE, 40.75, 0, 1, 0),
                 new Obstacle(Obstacle.ObstacleType.TRIANGLE, 55.5, 0, 1, 0),
                 new Obstacle(Obstacle.ObstacleType.TRIANGLE, 56.5, 0, 1, 0),
-                new Obstacle(Obstacle.ObstacleType.LINE, 57, 1, 0, 1),
                 new Obstacle(Obstacle.ObstacleType.LINE, 58, 0, 3, 0),
                 new Obstacle(Obstacle.ObstacleType.TRIANGLE, 80, 0, 1, 0),
                 new Obstacle(Obstacle.ObstacleType.TRIANGLE, 81, 0, 1, 0),
@@ -201,61 +193,43 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
         // Give user hint on how to jump
         GLabel tip1 = new GLabel("Hit the spacebar to jump!");
         tip1.setFont("SansSerif-60");
-        add(tip1, (getWidth() - tip1.getWidth())/2, getHeight()/3);
-        //System.out.println(tip1.isVisible());
+        add(tip1, (getWidth() - tip1.getWidth())/2, getHeight()/2);
 
         // Give user hint on how to pause
         GLabel tip2 = new GLabel("Hit the p button to pause.");
         tip2.setFont("SansSerif-60");
         add(tip2, (getWidth() - tip2.getWidth())/2, getHeight()/2);
-        //System.out.println(tip2.isVisible());
+        tip2.setVisible(false);
 
         // Give user hint on how to resume
         GLabel tip3 = new GLabel("Hit the p button again to resume.");
         tip3.setFont("SansSerif-60");
         add(tip3, (getWidth() - tip3.getWidth())/2, getHeight()/2);
         tip3.setVisible(false);
-        //System.out.println(tip3.isVisible());
 
         // Run game loop
         GameLoop:
         while (true) {
-            // Remove tips once player jumps
-            if (jump && tip1.isVisible() || paused && tip1.isVisible()) {
+            // Remove tips once player has followed them and pause/resume logic
+            if (jump && tip1.isVisible()) {
+                tip1.setVisible(false);
                 remove(tip1);
-                //tip.setVisible(false);
-                remove(tip2);
-                //tip2.setVisible(false);
-            }
-
-            //pause and resume logic
-            while (paused) {
-                tip3.setVisible(true);
-                //makes sure jumps during a pause do not work
-                jump = false;
-            }
-            tip3.setVisible(false);
-
-            // Move player
-            if (!player.getGrounded()) {
-                //fall due to gravity
-                player.move(0, player.getDy());
-                //rotation animation while falling
-                player.rotate(-GeometryDash_ShijuGoyal.kRotationConstant);
-                //updates velocity to allow for gravity-like acceleration
-                player.setDy(player.getDy() + GeometryDash_ShijuGoyal.kGravityConstant);
-                //makes sure a jump while in the air does not cause the
-                //player to jump once it hits the ground again
-                jump = false;
-
-                // Check if player is hitting edges of screen
-                if (player.getBottom() >= getHeight() || player.getTop() <= 0) {
-                    remove(tip1);
+                tip2.setVisible(true);
+            } else if (paused) {
+                if (tip2.isVisible()) {
+                    tip2.setVisible(false);
                     remove(tip2);
-                    deathAnimation(player);
-                    return false;
+                }
+                tip3.setVisible(true);
+
+                // Pause and resume logic
+                while (paused) {
+                    // Ensure jumps during a pause do not work
+                    jump = false;
+                    pause(kLoopDt);
                 }
             }
+            tip3.setVisible(false);
 
             // Update all non-player positions and remove if offscreen
             for (Platform platform : platforms) {
@@ -269,19 +243,23 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
             }
             if (ending.updateLocation()) remove(ending.getObject());
 
+            // Check for collisions
             player.setGrounded(false);
             for (Platform platform : platforms) {
                 if (platform.checkCollision(player)) {
-                    //to make player landings smooth
-                    if (gravInverted) {
-                        player.setLocation(player.getX(), platform.getObject().getY()
-                                + platform.getObject().getHeight() + kObjectSize / 2);
-                    } else {
-                        player.setLocation(player.getX(), platform.getObject().getY()
-                                - kObjectSize / 2);
-                    }
-                    player.setFlat();
-                    player.setGrounded(true);
+                    remove(tip1);
+                    remove(tip2);
+                    deathAnimation(player);
+                    return false;
+                }
+            }
+
+            for (Obstacle obstacle : obstacles) {
+                if (obstacle.checkCollision(player)) {
+                    remove(tip1);
+                    remove(tip2);
+                    deathAnimation(player);
+                    return false;
                 }
             }
 
@@ -289,11 +267,19 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
                 if (portal.checkCollision(player)) {
                     switch (portal.getType()) {
                         case GRAVITY:
-                            gravInverted = !gravInverted;
+                            invertedGravity = !invertedGravity;
                             invertGravity();
                             break;
                     }
                 }
+            }
+
+            // Game completion logic
+            if (ending.checkCollision(player)) {
+                remove(tip1);
+                remove(tip2);
+                winningAnimation(player);
+                return true;
             }
 
             // Update player state
@@ -302,17 +288,20 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
                 if (jump) {
                     player.jump();
                     player.setGrounded(false);
-                    jump = false;
                 }
             }
+            if (!player.getGrounded()) {
+                // Update position
+                player.move(0, player.getDy());
+                // Rotation animation while falling
+                player.rotate(-GeometryDash_ShijuGoyal.kRotationConstant);
+                // Updates velocity to allow for gravity-like acceleration
+                player.setDy(player.getDy() + GeometryDash_ShijuGoyal.kGravityConstant);
 
-            // Check for collisions
-            for (Obstacle obstacle : obstacles) {
-                System.out.println("about to call check collision");
-                if (obstacle.checkCollision(player)) {
+                // Check if player is hitting edges of screen
+                if (player.getBottom() >= getHeight() || player.getTop() <= 0) {
                     remove(tip1);
                     remove(tip2);
-                    System.out.println("collided!");
                     deathAnimation(player);
                     return false;
                 }
@@ -320,14 +309,6 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
 
             // Pause for game loop
             pause(kLoopDt);
-
-            //Game completion logic
-            if (ending.checkCollision(player)) {
-                remove(tip1);
-                remove(tip2);
-                winningAnimation(player);
-                return true;
-            }
         }
     }
 
@@ -362,7 +343,6 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
             lossMessage.setVisible(false);
             pause(kMessageDisplayDt);
         }
-        lossMessage.setVisible(true);
     }
 
     public void winningAnimation(Player player) {
@@ -370,7 +350,7 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
         winMessage.setFont("SansSerif-60");
         winMessage.setColor(Color.YELLOW);
         add(winMessage, (getWidth() - winMessage.getWidth())/2, getHeight()/2);
-        for (int i = 0; i < kNumMessageFlashes; i++) {
+        while (true) {
             player.setVisible(true);
             winMessage.setVisible(true);
             pause(kMessageDisplayDt);
@@ -378,8 +358,6 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
             winMessage.setVisible(false);
             pause(kMessageDisplayDt);
         }
-        player.setVisible(true);
-        winMessage.setVisible(true);
     }
 
     public void invertGravity() {
@@ -388,23 +366,23 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
         kGravityConstant *= -1;
     }
 
-    private class MyKeyListener implements KeyListener {
+    private static class MyKeyListener implements KeyListener {
         @Override
         public void keyPressed(KeyEvent e) {
             if (e.getKeyCode() == KeyEvent.VK_SPACE) {
                 jump = true;
             }
             if (e.getKeyCode() == KeyEvent.VK_P) {
-                if (!paused) {
-                    paused = true;
-                } else {
-                    paused = false;
-                }
+                paused = !paused;
             }
         }
 
         @Override
-        public void keyReleased(KeyEvent e) {}
+        public void keyReleased(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                jump = false;
+            }
+        }
 
         @Override
         public void keyTyped (KeyEvent e) {}

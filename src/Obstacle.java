@@ -12,20 +12,12 @@ public class Obstacle extends MoveableGameObject {
     }
 
     private ObstacleType type;
-    //private double xMultiplier;
-    //private int yIndex;
-    private double param1;
-    private double param2;
 
     public Obstacle(Obstacle.ObstacleType type, double xMultiplier, int yIndex, double param1, double param2) {
         //for all types, xMultiplier specifies x-coord, & yIndex specifies y-coord using heights array
 
         //assigning params to instance vars so they can be accessed by other methods in class
         this.type = type;
-        //this.xMultiplier = xMultiplier;
-        //this.yIndex = yIndex;
-        this.param1 = param1;
-        this.param2 = param2;
 
         //actual creation of obstacle object
         switch (this.type) {
@@ -105,14 +97,11 @@ public class Obstacle extends MoveableGameObject {
                 double obstacleRight = getObject().getX() + getObject().getWidth();
 
                 if (player.getRight() >= obstacleLeft && player.getLeft() <= obstacleRight) {
-                    //System.out.println("Horizontal overlap!");
                     horizontalOverlap = true;
                 }
                 if (player.getBottom() >= obstacleTop && player.getTop() <= obstacleBottom) {
-                    //System.out.println("Vertical overlap!");
                     verticalOverlap = true;
                 }
-                //System.out.println("Horizontal overlap: " + horizontalOverlap +" Vertical Overlap: " + verticalOverlap);
 
                 return (verticalOverlap && horizontalOverlap);
 
@@ -145,16 +134,15 @@ public class Obstacle extends MoveableGameObject {
                 }
 
                 //CHECK IF ANY CORNER OF TRIANGLE IS CONTAINED IN SQUARE
-                GPoint triPoint1 = new GPoint(getObject().getX() - param1/2,getObject().getY());
-                GPoint triPoint2 = new GPoint(getObject().getX() + param1/2,getObject().getY());
-                GPoint triPoint3 = new GPoint(getObject().getX(),getObject().getY() + param1);
+                GPoint triPoint1 = new GPoint(getObject().getX() - getObject().getWidth()/2,getObject().getY());
+                GPoint triPoint2 = new GPoint(getObject().getX() + getObject().getWidth()/2,getObject().getY());
+                GPoint triPoint3 = new GPoint(getObject().getX(),getObject().getY() + getObject().getWidth());
 
                 if (player.contains(triPoint1) ||
                         player.contains(triPoint2) ||
                         player.contains(triPoint3)) {
                     return true;
                 }
-
 
                 return false;
 
@@ -190,7 +178,6 @@ public class Obstacle extends MoveableGameObject {
     public boolean triContaining(GObject triangle, GPoint point) {
         double x0 = triangle.getX();
         double y0 = triangle.getY();
-        System.out.println(x0 + ", " + y0 + ", " + point.getX() + ", " + point.getY());
         //NEEDS TO BE MINUS BECAUSE MINUS Y GOES UP
         if (point.getY() > y0 || point.getY() <= y0 - triangle.getHeight()) {
             return false;
@@ -198,10 +185,8 @@ public class Obstacle extends MoveableGameObject {
         //If code reaches here, then GPoint y-coord is within triangle
         //vertical bounding box
         double distance = (point.getY() - (y0 - triangle.getHeight()))/2;
-        System.out.println("Slatt: " + point.getX()+ ", " + x0 + ", " + distance);
         if (point.getX() >= x0 - distance &&
                 point.getX() <= x0 + distance) {
-            System.out.println("Collision");
             return true;
         }
         return false;

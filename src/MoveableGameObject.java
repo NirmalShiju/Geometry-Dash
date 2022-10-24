@@ -7,16 +7,27 @@ public abstract class MoveableGameObject {
 
     public boolean updateLocation() {
         object.move(GeometryDash_ShijuGoyal.kMovementConstant, 0);
-        /*
-        if (object.getX()+object.getWidth() < 0) {
-            System.out.println("basdfasdfasdf");
-        }
-        */
         return (object.getX()+object.getWidth() < 0);
     }
 
     public GObject getObject() {
         return object;
+    }
+
+    public double getTop() {
+        return object.getY();
+    }
+
+    public double getBottom() {
+        return object.getY()+object.getHeight();
+    }
+
+    public double getLeft() {
+        return object.getX();
+    }
+
+    public double getRight() {
+        return object.getX()+object.getWidth();
     }
 
     public abstract boolean checkCollision(Player player);
