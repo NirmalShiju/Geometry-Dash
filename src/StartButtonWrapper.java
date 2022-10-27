@@ -4,9 +4,24 @@ import acm.graphics.*;
 import java.awt.Color;
 import java.util.ArrayList;
 
+/**
+ * Creates start button and intro screen.
+ */
 public class StartButtonWrapper {
     private static ArrayList<GObject> startButtonParts;
 
+    /**
+     * Creates start button using specified attributes.
+     *
+     * @param screenWidth defines width of screen
+     * @param screenHeight defines height of screen
+     * @param startBoxSize defines size of neon blue square
+     * @param startRectangleSize defines size of green rectangles
+     * @param startTriangleOffset defines offset between green rectangle
+     *                            to triangle
+     * @param startTriangleSize defines size of triangle play button
+     *                          base and height
+     */
     public StartButtonWrapper(
             double screenWidth,
             double screenHeight,

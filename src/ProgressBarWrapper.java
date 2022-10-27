@@ -7,9 +7,20 @@ import acm.graphics.GRect;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * Creates progress bar for user to look
+ * at as they progress through level.
+ */
 public class ProgressBarWrapper {
     private static ArrayList<GRect> progressBarParts;
 
+    /**
+     * Creates progress bar using specified attributes.
+     *
+     * @param screenWidth defines screen width
+     * @param yMultiplier defines y-position
+     * @param heightMultiplier defines height of bar
+     */
     public ProgressBarWrapper(
             double screenWidth,
             double yMultiplier,
@@ -57,6 +68,12 @@ public class ProgressBarWrapper {
         return progressBar;
     }
 
+    /**
+     * Updates progress bar so it shows the
+     * percentage of the level that user has completed.
+     *
+     * @param percent of level that user has completed
+     */
     public void updateProgressBar(double percent) {
         double width = progressBarParts.get(0).getWidth();
         progressBarParts.get(1).scale(width*(1-percent)/progressBarParts.get(1).getWidth(), 1);

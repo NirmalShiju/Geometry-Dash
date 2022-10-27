@@ -6,6 +6,10 @@ import acm.graphics.GRect;
 
 import java.awt.*;
 
+/**
+ * Creates platforms that player can jump onto
+ * but cannot jump into.
+ */
 public class Platform extends MoveableGameObject {
     public enum PlatformType {
         RECTANGLE,
@@ -14,6 +18,17 @@ public class Platform extends MoveableGameObject {
 
     private PlatformType type;
 
+    /**
+     * Creates platform with specified attributes.
+     *
+     * @param type specifies if platform is rectangle or line
+     * @param xMultiplier specifies x-coord of position
+     * @param yIndex specifies y-coord of position
+     * @param param1 defines width of rectangle OR
+     *               x-coord of last point on line
+     * @param param2 defines height of rectangle OR
+     *      *        y-coord of last point on line
+     */
     public Platform(PlatformType type, double xMultiplier, int yIndex, double param1, double param2) {
         this.type = type;
         switch (this.type) {
@@ -42,6 +57,14 @@ public class Platform extends MoveableGameObject {
         }
     }
 
+    /**
+     * Checks if player has collided with
+     * the Platform. Player survives only if
+     * it lands on top of platform.
+     *
+     * @param player defines player to check collision with
+     * @return whether collision has occurred
+     */
     @Override
     public boolean checkCollision(Player player) {
         // Check if there is no overlap at all

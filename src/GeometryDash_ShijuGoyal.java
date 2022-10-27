@@ -1,3 +1,14 @@
+/**
+ *  Assignment: Risky Project
+ *
+ *  Recereates the classic game of Geometry Dash
+ *  using ACM Graphics
+ *
+ * @author Dhruv Goyal
+ * @author Nirmal Shiju
+ *
+ */
+
 package src;
 
 import acm.graphics.*;
@@ -9,6 +20,9 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * Main tester class containing main() and run() method.
+ */
 public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListener {
     // Background image constants
     public static final double kBackgroundPixelWidth = 1212;
@@ -45,10 +59,18 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
     public static final int kNumMessageFlashes = 3;
     public static final int kMessageDisplayDt = 500;
 
+    /**
+     * Main method starts game using run() method.
+     */
     public static void main(String[] args) {
         new GeometryDash_ShijuGoyal().start(args);
     }
 
+    /**
+     * Creates starting messages, intro screen, and
+     * repeatedly calls play() method until user wins
+     * a game.
+     */
     public void run() {
         // Tell
         GLabel request = new GLabel("Please maximize the screen");
@@ -99,11 +121,17 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
                 invertGravity();
                 invertedGravity = false;
             }
-            paused = false;
             completedGame = play();
         } while (!completedGame);
     }
 
+    /**
+     * Creates player, all obstacles, platforms, portals,
+     * and finish line. Runs through game and constantly
+     * checks for collisions to see if user wins or loses.
+     *
+     * @return whether player completed game or not
+     */
     public boolean play() {
         // START GAME
 
@@ -225,21 +253,20 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
                 tip1.setVisible(false);
                 remove(tip1);
                 tip2.setVisible(true);
-            } else if (paused) {
-                if (tip2.isVisible()) {
-                    tip2.setVisible(false);
-                    remove(tip2);
-                    tip1.setVisible(false);
-                    remove(tip1);
-                }
+            }
+            if (paused) {
+                tip2.setVisible(false);
+                remove(tip2);
+                tip1.setVisible(false);
+                remove(tip1);
                 tip3.setVisible(true);
-
-                // Pause and resume logic
-                while (paused) {
-                    // Ensure jumps during a pause do not work
-                    jump = false;
-                    pause(kLoopDt);
-                }
+                System.out.println("PAUSE HAS REGISTERED");
+            }
+            // Pause and resume logic
+            while (paused) {
+                // Ensure jumps during a pause do not work
+                jump = false;
+                pause(kLoopDt);
             }
             tip3.setVisible(false);
 
@@ -291,6 +318,7 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
             if (ending.checkCollision(player)) {
                 remove(tip1);
                 remove(tip2);
+                remove(tip3);
                 progressBar.updateProgressBar(0);
                 winningAnimation(player);
                 return true;
@@ -326,6 +354,12 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
         }
     }
 
+    /**
+     * Causes player to explode and displays
+     * a losing message to user.
+     *
+     * @param player object that explodes
+     */
     public void deathAnimation (Player player) {
         double currentX = player.getX();
         double currentY = player.getY();
@@ -359,6 +393,12 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
         }
     }
 
+    /**
+     * Causes player to blink and displays
+     * winning message to user.
+     *
+     * @param player object that will flash
+     */
     public void winningAnimation(Player player) {
         GLabel winMessage = new GLabel("Congratulations! You Won!");
         winMessage.setFont("SansSerif-60");
@@ -374,13 +414,27 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
         }
     }
 
+    /**
+     * Inverts gravity such that game looks
+     * like it is upside down, which is a
+     * feature in the real Geometry Dash game.
+     */
     public void invertGravity() {
         kJumpConstant *= -1;
         kRotationConstant *= -1;
         kGravityConstant *= -1;
     }
 
+    /**
+     * Allows user to use keys as input for game.
+     */
     private static class MyKeyListener implements KeyListener {
+        /**
+         * If spacebar is pressed, player jumps.
+         * "P" is used as a toggle pause button.
+         *
+         * @param e the event to be processed
+         */
         @Override
         public void keyPressed(KeyEvent e) {
             if (e.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -388,9 +442,16 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
             }
             if (e.getKeyCode() == KeyEvent.VK_P) {
                 paused = !paused;
+                System.out.println("PAUSED BOI");
             }
         }
 
+        /**
+         * Makes sure that player stops jumping
+         * right after spacebar is released.
+         *
+         * @param e the event to be processed
+         */
         @Override
         public void keyReleased(KeyEvent e) {
             if (e.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -398,6 +459,11 @@ public class GeometryDash_ShijuGoyal extends GraphicsProgram implements KeyListe
             }
         }
 
+        /**
+         * No implementation
+         *
+         * @param e the event to be processed
+         */
         @Override
         public void keyTyped (KeyEvent e) {}
     }
