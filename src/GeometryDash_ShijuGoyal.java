@@ -1,12 +1,10 @@
 /**
  *  Assignment: Risky Project
  *
- *  Recereates the classic game of Geometry Dash
- *  using ACM Graphics
+ *  Recereates the classic game of Geometry Dash using ACM Graphics
  *
  * @author Dhruv Goyal
  * @author Nirmal Shiju
- *
  */
 
 package src;
